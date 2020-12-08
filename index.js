@@ -1,9 +1,13 @@
 const express = require('express');
 const path = require('path');
+const { errors } = require('celebrate');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const app = express();
+const { requestLogger, errorLogger } = require('./middlewares/logger');
+const NotFoundError = require('./middlewares/errors/NotFoundError.js');
+
 const PORT = 3000;
 
 const mongoDbUrl = 'mongodb://localhost:27017/newsdb';
@@ -24,7 +28,7 @@ mongoose
 
 app.use(cors());
 
-// app.use(requestLogger);
+app.use(requestLogger);
 // app.get('/crash-test', () => {
 //   setTimeout(() => {
 //     throw new Error('Сервер сейчас упадёт');
@@ -38,8 +42,8 @@ app.use(cors());
 app.use(() => {
   throw new NotFoundError('Запрашиваемый ресурс не найден');
 });
-// app.use(errorLogger);
-// app.use(errors());
+app.use(errorLogger);
+app.use(errors());
 app.use((err, req, res, next) => {
   res
     .status(err.status || 500)
