@@ -1,14 +1,18 @@
+require('dotenv').config();
 const express = require('express');
-const path = require('path');
 const { errors } = require('celebrate');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const path = require('path');
+
 const app = express();
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const { createUser, login } = require('./controllers/users.js');
+const { validationUser } = require('./middlewares/validation');
 const NotFoundError = require('./middlewares/errors/NotFoundError.js');
 
-const PORT = 3000;
+const PORT = 4000;
 
 const mongoDbUrl = 'mongodb://localhost:27017/newsdb';
 const mongoConnectOptions = {
@@ -17,26 +21,14 @@ const mongoConnectOptions = {
   useFindAndModify: false,
 };
 
-mongoose
-  .connect(mongoDbUrl, mongoConnectOptions)
-  .then(() => {
-    console.log('База данных подключена');
-  })
-  .catch((err) => {
-    console.log(`Ошибка при подключении базы данных: ${err}`);
-  });
+mongoose.connect(mongoDbUrl, mongoConnectOptions);
 
 app.use(cors());
 
 app.use(requestLogger);
-// app.get('/crash-test', () => {
-//   setTimeout(() => {
-//     throw new Error('Сервер сейчас упадёт');
-//   }, 0);
-// });
 
-// app.post('/signin', validationUser, bodyParser.json(), login);
-// app.post('/signup', validationUser, bodyParser.json(), createUser);
+app.post('/signin', validationUser, bodyParser.json(), login);
+app.post('/signup', validationUser, bodyParser.json(), createUser);
 
 // app.use(routes);
 app.use(() => {
@@ -51,4 +43,4 @@ app.use((err, req, res, next) => {
   next();
 });
 
-app.listen(PORT, () => console.log(`server is running on port ${PORT}`));
+app.listen(PORT);

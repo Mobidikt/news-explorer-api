@@ -30,6 +30,14 @@ const cardSchema = new Schema(
         'введён некорректный URL',
       ],
     },
+    image: {
+      type: String,
+      required: true,
+      match: [
+        /(https?|ftp|file):\/\/(www\.)?([-a-z0-9]+\.)([0-9a-z].*)/,
+        'введён некорректный URL',
+      ],
+    },
     owner: {
       type: Schema.Types.ObjectId,
       ref: 'user',
