@@ -1,12 +1,28 @@
 const router = require('express').Router();
 const bodyParser = require('body-parser');
+const auth = require('../middlewares/auth');
 const {
-  validationCard,
+  getArticles,
+  createArticle,
+  deleteArticle,
+} = require('../controllers/controllersArticles.js');
+const {
+  validationArticle,
   validationParams,
 } = require('../middlewares/validation');
 
-router.get('/cards', auth, getCards);
-router.post('/cards', validationCard, auth, bodyParser.json(), createCard);
-router.delete('/cards/:cardId', validationParams, auth, deleteCard);
-router.put('/cards/likes/:cardId', validationParams, auth, likeCard);
-router.delete('/cards/likes/:cardId', validationParams, auth, dislikeCard);
+router.get(
+  '/articles',
+  // auth,
+  getArticles,
+);
+router.post(
+  '/articles',
+  validationArticle,
+  // auth,
+  bodyParser.json(),
+  createArticle,
+);
+router.delete('/articles/:articleId', validationParams, auth, deleteArticle);
+
+module.exports = router;

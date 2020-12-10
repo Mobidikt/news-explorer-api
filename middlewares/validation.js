@@ -7,7 +7,7 @@ const validationUser = celebrate({
   }),
 });
 
-const validationCard = celebrate({
+const validationArticle = celebrate({
   body: Joi.object().keys({
     link: Joi.string()
       .required()
@@ -45,7 +45,7 @@ const validationToken = celebrate({
 
 module.exports = {
   validationUser,
-  validationCard,
+  validationArticle,
   validationParams,
   validationUserInfo,
 
