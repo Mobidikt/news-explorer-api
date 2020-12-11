@@ -15,7 +15,9 @@ const getArticles = async (req, res, next) => {
 
 const createArticle = async (req, res, next) => {
   try {
-    const { keyword, title, text, date, source, link, image } = req.body;
+    const {
+      keyword, title, text, date, source, link, image,
+    } = req.body;
     const article = await Article.create({
       keyword,
       title,
