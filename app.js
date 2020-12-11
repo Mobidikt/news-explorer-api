@@ -16,7 +16,7 @@ const {
 const NotFoundError = require('./middlewares/errors/NotFoundError.js');
 const { NOT_FOUND, SERVER } = require('./libs/messages');
 
-const PORT = 3000;
+const PORT = 4000;
 
 const mongoDbUrl = 'mongodb://localhost:27017/newsdb';
 const mongoConnectOptions = {
