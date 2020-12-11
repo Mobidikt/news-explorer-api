@@ -47,7 +47,7 @@ const deleteArticle = async (req, res, next) => {
     if (article.owner.toString() !== req.user._id) {
       throw new ForbiddenError(CLIENT_ERROR.FORBIDDEN);
     } else {
-      await Article.findByIdAndDelete(req.params.cardId).orFail();
+      await Article.findByIdAndDelete(req.params.articleId).orFail();
       return res.status(200).send({ message: SUCCESS.DELETE_ARTICLE });
     }
   } catch (err) {
