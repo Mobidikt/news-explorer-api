@@ -1,12 +1,19 @@
 const { celebrate, Joi } = require('celebrate');
 
-const validationUser = celebrate({
+const validationLogin = celebrate({
   body: Joi.object().keys({
     email: Joi.string().required().email(),
     password: Joi.string().required().min(5),
   }),
 });
 
+const validateRegister = celebrate({
+  body: Joi.object().keys({
+    name: Joi.string().required().min(2).max(30),
+    email: Joi.string().required().email(),
+    password: Joi.string().required().min(5),
+  }),
+});
 const validationArticle = celebrate({
   body: Joi.object().keys({
     link: Joi.string()
@@ -23,16 +30,9 @@ const validationArticle = celebrate({
 const validationParams = celebrate({
   params: Joi.object()
     .keys({
-      cardId: Joi.string().required().hex(),
+      articleId: Joi.string().required().hex(),
     })
     .unknown(true),
-});
-
-const validationUserInfo = celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().required().min(2).max(50),
-    about: Joi.string().required().min(5).max(50),
-  }),
 });
 
 const validationToken = celebrate({
@@ -44,10 +44,9 @@ const validationToken = celebrate({
 });
 
 module.exports = {
-  validationUser,
+  validateRegister,
+  validationLogin,
   validationArticle,
   validationParams,
-  validationUserInfo,
-
   validationToken,
 };

@@ -1,5 +1,6 @@
 const { Schema, model } = require('mongoose');
 const validator = require('validator');
+const { CLIENT_ERROR } = require('../libs/messages');
 
 const userSchema = new Schema(
   {
@@ -17,7 +18,7 @@ const userSchema = new Schema(
         validator(v) {
           return validator.isEmail(v);
         },
-        message: 'Неверный email',
+        message: CLIENT_ERROR.EMAIL,
       },
     },
     password: {

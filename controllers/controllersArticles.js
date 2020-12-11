@@ -2,6 +2,7 @@ const BadRequestError = require('../middlewares/errors/BadRequestError');
 const ForbiddenError = require('../middlewares/errors/ForbiddenError');
 const NotFoundError = require('../middlewares/errors/NotFoundError');
 const Article = require('../models/article');
+const { CLIENT_ERROR, SUCCESS } = require('../libs/messages');
 
 const getArticles = async (req, res, next) => {
   try {
@@ -44,17 +45,17 @@ const deleteArticle = async (req, res, next) => {
   try {
     const article = await Article.findById(req.params.articleId);
     if (article.owner.toString() !== req.user._id) {
-      throw new ForbiddenError('Недостаточно прав');
+      throw new ForbiddenError(CLIENT_ERROR.FORBIDDEN);
     } else {
       await Article.findByIdAndDelete(req.params.cardId).orFail();
-      return res.status(200).send({ message: 'Статья удалена' });
+      return res.status(200).send({ message: SUCCESS.DELETE_ARTICLE });
     }
   } catch (err) {
     if (err.name === 'CastError') {
-      return next(new BadRequestError('Переданы некорректные данные'));
+      return next(new BadRequestError(CLIENT_ERROR.DATA));
     }
     if (err.name === 'DocumentNotFoundError') {
-      return next(new NotFoundError('Нет статьи с таким id'));
+      return next(new NotFoundError(CLIENT_ERROR.ARTICLE));
     }
     return next();
   }

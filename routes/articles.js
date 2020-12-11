@@ -9,17 +9,13 @@ const {
 const {
   validationArticle,
   validationParams,
-} = require('../middlewares/validation');
+} = require('../middlewares/validation.js');
 
-router.get(
-  '/articles',
-  // auth,
-  getArticles,
-);
+router.get('/articles', auth, getArticles);
 router.post(
   '/articles',
   validationArticle,
-  // auth,
+  auth,
   bodyParser.json(),
   createArticle,
 );

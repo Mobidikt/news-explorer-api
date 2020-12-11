@@ -5,6 +5,7 @@ const BadRequestError = require('../middlewares/errors/BadRequestError');
 const UnauthorizedError = require('../middlewares/errors/UnauthorizedError');
 const NotFoundError = require('../middlewares/errors/NotFoundError');
 const ConflictError = require('../middlewares/errors/ConflictError');
+const { CLIENT_ERROR } = require('../libs/messages');
 
 const { NODE_ENV, JWT_TOKEN } = process.env;
 
@@ -13,12 +14,12 @@ const getUser = async (req, res, next) => {
     const id = req.user._id;
     const user = await User.findById(id);
     if (!user) {
-      return next(new NotFoundError('Нет пользователя с таким id'));
+      return next(new NotFoundError(CLIENT_ERROR.USER));
     }
     return res.status(200).send({ name: user.name, email: user.email });
   } catch (err) {
     if (err.name === 'CastError') {
-      return next(new BadRequestError('Переданы некорректные данные'));
+      return next(new BadRequestError(CLIENT_ERROR.DATA));
     }
     return next();
   }
@@ -26,13 +27,16 @@ const getUser = async (req, res, next) => {
 
 const createUser = async (req, res, next) => {
   let hashedPassword;
-  const { email, password } = req.body;
-  if (!email || !password || !password.trim()) {
-    return next(new BadRequestError('Переданы некорректные данные'));
+  const { name, email, password } = req.body;
+  if (!name || !email || !password) {
+    return next(new BadRequestError(CLIENT_ERROR.FIELDS));
+  }
+  if (!password.trim()) {
+    return next(new BadRequestError(CLIENT_ERROR.PASSWORD_VALID));
   }
   const user = await User.findOne({ email });
   if (user) {
-    return next(new ConflictError('Уже есть пользователь с таким email'));
+    return next(new ConflictError(CLIENT_ERROR.EXIST_EMAIl));
   }
   try {
     hashedPassword = await bcrypt.hash(req.body.password, 10);
@@ -40,7 +44,6 @@ const createUser = async (req, res, next) => {
     return next();
   }
   try {
-    const { name } = req.body;
     const newUser = await User.create({
       name,
       email,
@@ -52,7 +55,13 @@ const createUser = async (req, res, next) => {
     });
   } catch (err) {
     if (err.name === 'ValidationError') {
-      return next(new BadRequestError('Переданы некорректные данные'));
+      return next(
+        new BadRequestError({
+          message: `${Object.values(err.errors)
+            .map((error) => error.message)
+            .join(', ')}`,
+        }),
+      );
     }
     return next();
   }
@@ -61,16 +70,16 @@ const createUser = async (req, res, next) => {
 const login = async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
-    return next(new BadRequestError('Неверные данные'));
+    return next(new BadRequestError(CLIENT_ERROR.FIELDS));
   }
   try {
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
-      return next(new UnauthorizedError('Нет пользователя с таким email'));
+      return next(new UnauthorizedError(CLIENT_ERROR.NOT_EXIST_EMAIL));
     }
     const matched = await bcrypt.compare(password, user.password);
     if (!matched) {
-      return next(new UnauthorizedError('Неправильный пароль'));
+      return next(new UnauthorizedError(CLIENT_ERROR.PASSWORD));
     }
     const token = jwt.sign(
       { _id: user._id },
@@ -81,7 +90,7 @@ const login = async (req, res, next) => {
     );
     return res.status(200).send({ token });
   } catch (err) {
-    return next(new UnauthorizedError('Некоректные данные'));
+    return next(new UnauthorizedError(CLIENT_ERROR.DATA));
   }
 };
 

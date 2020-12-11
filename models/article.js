@@ -1,4 +1,5 @@
 const { Schema, model } = require('mongoose');
+const { CLIENT_ERROR } = require('../libs/messages');
 
 const cardSchema = new Schema(
   {
@@ -27,7 +28,7 @@ const cardSchema = new Schema(
       required: true,
       match: [
         /(https?|ftp|file):\/\/(www\.)?([-a-z0-9]+\.)([0-9a-z].*)/,
-        'введён некорректный URL',
+        CLIENT_ERROR.URL_LINK,
       ],
     },
     image: {
@@ -35,7 +36,7 @@ const cardSchema = new Schema(
       required: true,
       match: [
         /(https?|ftp|file):\/\/(www\.)?([-a-z0-9]+\.)([0-9a-z].*)/,
-        'введён некорректный URL',
+        CLIENT_ERROR.URL_IMAGE,
       ],
     },
     owner: {
