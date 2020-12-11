@@ -4,7 +4,6 @@ const { errors } = require('celebrate');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const helmet = require('helmet');
 const routes = require('./routes/index.js');
 
 const app = express();
