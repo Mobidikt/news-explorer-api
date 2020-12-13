@@ -21,7 +21,7 @@ const getUser = async (req, res, next) => {
     if (err.name === 'CastError') {
       return next(new BadRequestError(CLIENT_ERROR.DATA));
     }
-    return next();
+    return next(err);
   }
 };
 
@@ -41,7 +41,7 @@ const createUser = async (req, res, next) => {
   try {
     hashedPassword = await bcrypt.hash(req.body.password, 10);
   } catch (err) {
-    return next();
+    return next(err);
   }
   try {
     const newUser = await User.create({
@@ -63,7 +63,7 @@ const createUser = async (req, res, next) => {
         }),
       );
     }
-    return next();
+    return next(err);
   }
 };
 

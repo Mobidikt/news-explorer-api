@@ -9,7 +9,7 @@ const getArticles = async (req, res, next) => {
     const articles = await Article.find({ owner: req.user._id });
     return res.status(200).send(articles);
   } catch (err) {
-    return next();
+    return next(err);
   }
 };
 
@@ -28,7 +28,15 @@ const createArticle = async (req, res, next) => {
       image,
       owner: req.user._id,
     });
-    return res.status(200).send(article);
+    return res.status(200).send({
+      keyword: article.keyword,
+      title: article.title,
+      text: article.text,
+      date: article.date,
+      source: article.source,
+      link: article.link,
+      image: article.image,
+    });
   } catch (err) {
     if (err.name === 'ValidationError') {
       return next(
@@ -39,19 +47,20 @@ const createArticle = async (req, res, next) => {
         }),
       );
     }
-    return next();
+    return next(err);
   }
 };
 
 const deleteArticle = async (req, res, next) => {
   try {
-    const article = await Article.findById(req.params.articleId);
+    const article = await Article.findById(req.params.articleId).select(
+      '+owner',
+    );
     if (article.owner.toString() !== req.user._id) {
-      throw new ForbiddenError(CLIENT_ERROR.FORBIDDEN);
-    } else {
-      await Article.findByIdAndDelete(req.params.articleId).orFail();
-      return res.status(200).send({ message: SUCCESS.DELETE_ARTICLE });
+      return next(new ForbiddenError(CLIENT_ERROR.FORBIDDEN));
     }
+    await Article.findByIdAndDelete(req.params.articleId).orFail();
+    return res.status(200).send({ message: SUCCESS.DELETE_ARTICLE });
   } catch (err) {
     if (err.name === 'CastError') {
       return next(new BadRequestError(CLIENT_ERROR.DATA));
@@ -59,7 +68,7 @@ const deleteArticle = async (req, res, next) => {
     if (err.name === 'DocumentNotFoundError') {
       return next(new NotFoundError(CLIENT_ERROR.ARTICLE));
     }
-    return next();
+    return next(err);
   }
 };
 

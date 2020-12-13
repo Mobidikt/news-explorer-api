@@ -16,24 +16,23 @@ const {
 const NotFoundError = require('./middlewares/errors/NotFoundError.js');
 const { NOT_FOUND, SERVER } = require('./libs/messages');
 
-const PORT = 4000;
+const { MONGO = 'mongodb://localhost:27017/newsdb', PORT = 3000 } = process.env;
 
-const mongoDbUrl = 'mongodb://localhost:27017/newsdb';
 const mongoConnectOptions = {
   useNewUrlParser: true,
   useCreateIndex: true,
   useFindAndModify: false,
 };
 
-mongoose.connect(mongoDbUrl, mongoConnectOptions);
+mongoose.connect(MONGO, mongoConnectOptions);
 
 app.use(cors());
 
 app.use(requestLogger);
 
-app.post('/signin', validationLogin, bodyParser.json(), login);
-app.post('/signup', validateRegister, bodyParser.json(), createUser);
-
+app.use(bodyParser.json());
+app.post('/signin', validationLogin, login);
+app.post('/signup', validateRegister, createUser);
 app.use(routes);
 app.use(() => {
   throw new NotFoundError(NOT_FOUND);
