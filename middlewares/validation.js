@@ -30,11 +30,11 @@ const validationArticle = celebrate({
       link: Joi.string()
         .required()
         .min(5)
-        .pattern(/^(http|https):\/\/[^ "]+$/),
+        .pattern(/(https?|ftp|file):\/\/(www\.)?([-a-z0-9]+\.)([0-9a-z].*)/),
       image: Joi.string()
         .required()
         .min(5)
-        .pattern(/^(http|https):\/\/[^ "]+$/),
+        .pattern(/(https?|ftp|file):\/\/(www\.)?([-a-z0-9]+\.)([0-9a-z].*)/),
     }),
 });
 

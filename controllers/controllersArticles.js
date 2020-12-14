@@ -56,6 +56,9 @@ const deleteArticle = async (req, res, next) => {
     const article = await Article.findById(req.params.articleId).select(
       '+owner',
     );
+    if (!article) {
+      return next(new NotFoundError(CLIENT_ERROR.ARTICLE));
+    }
     if (article.owner.toString() !== req.user._id) {
       return next(new ForbiddenError(CLIENT_ERROR.FORBIDDEN));
     }
