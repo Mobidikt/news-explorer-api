@@ -1,6 +1,7 @@
 # Сервер news-explorer-api дипломной работы Яндекс практикума.
 
 ## Роуты
+
 POST /signup - регистрация пользователя
 POST /signin - логинизация пользователя
 GET /users/me - получение информации о пользователе
@@ -13,4 +14,4 @@ DELETE /articles/articleId - удаление статьи
 `npm run start` — запускает сервер  
 `npm run dev` — запускает сервер с hot-reload
 
-Сервер можно найти по api.rtxmobidikt.students.nomoreparties.co Публичный IP-адрес сервера 84.201.143.120
+Сервер можно найти по api.rtxmobidikt.students.nomoreparties.co Публичный IP-адрес сервера 178.154.228.107
